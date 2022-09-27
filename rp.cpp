@@ -15,6 +15,7 @@
 bool KillProgram = false;
 
 void Help();
+bool StartsWith(String Str, String Start);
 bool IsIn(String Str, String Sub);
 void Sleep(int time);
 void Timer(int time);
@@ -25,7 +26,7 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 
 void Help()
 {
-	String Version = "0.1.5";
+	String Version = "0.1.6";
 	print("Author: Dan (DJ) Coffman");
 	print("Program: \"rp\"");
 	print("Version: "<< Version);
@@ -68,6 +69,17 @@ void Timer(int time)
 {
 	Sleep(time);
 	KillProgram = true;
+}
+
+//Check if string begins with substring
+bool StartsWith(String Str, String Start)
+{
+	bool ItDoes = false;
+	if (Str.rfind(Start, 0) == 0)
+	{
+		ItDoes = true;
+	}
+	return ItDoes;
 }
 
 //Check if sub-string is in string
@@ -272,17 +284,27 @@ int main(int argc, char* argv[])
 				if (next < argc)
 				{
 					value = String(argv[next]);
-					//Get command
-					if ((now == "-c") || (now == "--comand"))
+					IsNotOk = StartsWith(value,"-");
+					if (IsNotOk == false)
 					{
-						Command = value;
+						//Get command
+						if ((now == "-c") || (now == "--comand"))
+						{
+							Command = value;
+						}
+						//Look for output
+						else if ((now == "--for") || (now == "--find"))
+						{
+							LookForOutput = value;
+						}
+						i++;
 					}
-					//Look for output
-					else if ((now == "--for") || (now == "--find"))
+					else
 					{
-						LookForOutput = value;
+						//Program will fail...show help screen
+						HelpScreen = true;
+						break;
 					}
-					i++;
 				}
 				else
 				{
