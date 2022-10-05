@@ -1,8 +1,3 @@
-//Additional Features:
-//	1) Kill program after output of a file or separate command
-//		1.1) possibly add threading
-//	2) Kill Sleep Thread when desired output
-
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -15,25 +10,31 @@
 bool KillProgram = false;
 
 void Help();
-bool StartsWith(String Str, String Start);
-bool IsIn(String Str, String Sub);
 void Sleep(int time);
 void Timer(int time);
-void CodeExecute(String command, int Clear, int time);
-String GetExecute(String command, int Clear, int time);
-void Execution(String command, int Clear, int time, String GetOutput);
+bool StartsWith(String Str, String Start);
+bool IsIn(String Str, String Sub);
+String shell(String command);
+void CodeExecute(String command, int Clear, int time, bool Wait);
+void UnitlExecute(String command);
+String GetExecute(String command, int Clear, int time, bool Wait);
+void Execution(String command, int Clear, int time, String GetOutput, bool Wait);
 void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait, String GetOutput);
 
 void Help()
 {
-	String Version = "0.1.6";
+	String TheName = "rp";
+	String Version = "0.1.9";
 	print("Author: Dan (DJ) Coffman");
-	print("Program: \"rp\"");
+	print("Program: \"" << TheName << "\"");
 	print("Version: "<< Version);
 	print("Purpose: run a command/script on repeat");
 	print("Usage: rp <args>");
-	print("\t-c <command|script file>\t: command or script to execute");
-	print("\t--comand <command|script file>\t: command or script to execute");
+	print("{REQUIRED}");
+	print("\t-c <command|script>\t\t: command or script to execute");
+	print("\t--command <command|script file>\t: command or script to execute");
+	print("");
+	print("{OPTIONAL}");
 	print("\t-s <sleep in seconds>\t\t: wait *seconds* before next execution");
 	print("\t--sleep <sleep in seconds>\t: wait *seconds* before next execution");
 	print("\t-r <number to repeat>\t\t: repeat (n) times");
@@ -43,10 +44,20 @@ void Help()
 	print("\t--show\t\t\t\t: show runtime info");
 	print("\t--wait\t\t\t\t: wait for next execution from user");
 	print("\t--prompt\t\t\t: prompt execution from user");
+	print("\t-u <command|script>\t\t: kill program command once other command/script finishes (no output)");
+	print("\t--until <command|script>\t: kill program command once other command/script finishes (no output)");
+	print("\t\t\t\t\t: overrides: --time, --repeat, and --for");
 	print("\t--find <look for>\t\t: continue running program until a given output");
 	print("\t--for <look for>\t\t: continue running program until a given output");
 	print("\t-clr\t\t\t\t: clear output from last command");
 	print("\t--clear\t\t\t\t: clear output from last command");
+	print("");
+	print("{EXAMPLE}: Run a command forever");
+	print("\t$ " << TheName << " -c ls");
+	print("");
+	print("{EXAMPLE}: Run a command 3 times, sleep for 3 seconds");
+	print("\t$ " << TheName << " -c ls -s 3 -r 3");
+	print("");
 	print("\n[NOTE] \"ctrl+c\" to kill program");
 }
 
@@ -119,42 +130,58 @@ String shell(String command)
 	return result;
 }
 
-void CodeExecute(String command, int Clear, int time)
+void CodeExecute(String command, int Clear, int time, bool Wait)
 {
 	system(command.c_str());
 	Sleep(time);
-	if (Clear == true)
+	//wait for user
+	if (Wait == true)
+	{
+		PressEnter;
+	}
+	if ((Clear == true) && (KillProgram != true))
 	{
 		system("clear");
 	}
 }
 
-String GetExecute(String command, int Clear, int time)
+void UnitlExecute(String command)
+{
+	system(command.c_str());
+	KillProgram = true;
+}
+
+String GetExecute(String command, int Clear, int time, bool Wait)
 {
 	String TheOut = "";
 	TheOut = shell(command.c_str());
 	Sleep(time);
-	if (Clear == true)
+	//wait for user
+	if (Wait == true)
+	{
+		PressEnter;
+	}
+	if ((Clear == true) && (KillProgram != true))
 	{
 		system("clear");
 	}
 	return TheOut;
 }
 
-void Execution(String command, int Clear, int time, String GetOutput)
+void Execution(String command, int Clear, int time, String GetOutput, bool Wait)
 {
 	String TheOutput = "";
 	bool IsFound = false;
 	//execute and show output of command/script
 	if (GetOutput == "")
 	{
-		CodeExecute(command, Clear, time);
+		CodeExecute(command, Clear, time, Wait);
 	}
 	//execute, show, and evaluate output of command/script
 	else
 	{
 		//execute and save output
-		TheOutput = GetExecute(command, Clear, time);
+		TheOutput = GetExecute(command, Clear, time, Wait);
 		//print output of command
 		print(TheOutput);
 		//check if output contains a given element
@@ -188,7 +215,7 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 				}
 			}
 
-			Execution(command, Clear, time, GetOutput);
+			Execution(command, Clear, time, GetOutput, Wait);
 
 			//just kill program
 			if (KillProgram == true)
@@ -196,11 +223,6 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 				break;
 			}
 
-			//wait for user
-			if (Wait == true)
-			{
-				PressEnter;
-			}
 			//keep track of runtime
 			if (Show == true)
 			{
@@ -226,18 +248,17 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 				}
 			}
 
-			Execution(command, Clear, time, GetOutput);
+			if ((lp +1) == repeat)
+			{
+				KillProgram = true;
+			}
+
+			Execution(command, Clear, time, GetOutput, Wait);
 
 			//just kill program
 			if (KillProgram == true)
 			{
 				break;
-			}
-
-			//wait for user
-			if (Wait == true)
-			{
-				PressEnter;
 			}
 		}
 		//show execution
@@ -255,6 +276,7 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 int main(int argc, char* argv[])
 {
 	String Command = "";
+	String OtherCommand = "";
 	String LookForOutput = "";
 	int SleepTime = 0;
 	int NumberOfRepeat = 0;
@@ -278,7 +300,7 @@ int main(int argc, char* argv[])
 			now = String(argv[i]);
 
 			//Get command and output of command
-			if ((now == "-c") || (now == "--comand") || (now == "--for") || (now == "--find"))
+			if ((now == "-c") || (now == "--command") || (now == "--for") || (now == "--find") || (now == "-u") || (now == "--until"))
 			{
 				next = i+1;
 				if (next < argc)
@@ -297,6 +319,11 @@ int main(int argc, char* argv[])
 						{
 							LookForOutput = value;
 						}
+						else if ((now == "-u") || (now == "--until"))
+						{
+							OtherCommand = value;
+						}
+
 						i++;
 					}
 					else
@@ -389,7 +416,20 @@ int main(int argc, char* argv[])
 		//run repeated command
 		else
 		{
-			if (TheTimer != 0)
+			if (OtherCommand != "")
+			{
+				//reset values
+				NumberOfRepeat = 0;
+				LookForOutput = "";
+				//spawn new thread
+				std::thread Until(UnitlExecute,OtherCommand+" > /dev/null");
+				std::thread RunCommand(Run,Command, ClearScreen, SleepTime, NumberOfRepeat, ShowInfo, WaitForUser, LookForOutput);
+
+				//synchronize threads
+				Until.join();
+				RunCommand.join();
+			}
+			else if (TheTimer != 0)
 			{
 				//spawn new thread
 				std::thread TimeRun(Timer,TheTimer);
