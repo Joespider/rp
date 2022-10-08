@@ -24,7 +24,7 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 void Help()
 {
 	String TheName = "rp";
-	String Version = "0.1.9";
+	String Version = "0.1.10";
 	print("Author: Dan (DJ) Coffman");
 	print("Program: \"" << TheName << "\"");
 	print("Version: "<< Version);
@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
 			now = String(argv[i]);
 
 			//Get command and output of command
-			if ((now == "-c") || (now == "--command") || (now == "--for") || (now == "--find") || (now == "-u") || (now == "--until"))
+			if ((now == "-c") || (now == "--command") || (now == "--for") || (now == "--find") || (now == "-u") || (now == "--until") || (now == "-s") || (now == "--sleep") || (now == "-r") || (now == "--repeat") || (now == "-t") || (now == "--timer"))
 			{
 				next = i+1;
 				if (next < argc)
@@ -323,36 +323,8 @@ int main(int argc, char* argv[])
 						{
 							OtherCommand = value;
 						}
-
-						i++;
-					}
-					else
-					{
-						//Program will fail...show help screen
-						HelpScreen = true;
-						break;
-					}
-				}
-				else
-				{
-					//Program will fail...show help screen
-					HelpScreen = true;
-					break;
-				}
-			}
-
-			//Get sleep in seconds
-			else if ((now == "-s") || (now == "--sleep") || (now == "-r") || (now == "--repeat") || (now == "-t") || (now == "--timer"))
-			{
-				next = i+1;
-				if (next < argc)
-				{
-					value = String(argv[next]);
-					IsNotOk = IsIn(value,"-");
-					if (IsNotOk == false)
-					{
 						//Get sleep in seconds
-						if ((now == "-s") || (now == "--sleep"))
+						else if ((now == "-s") || (now == "--sleep"))
 						{
 							SleepTime = stoi(value);
 						}
