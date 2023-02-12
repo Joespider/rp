@@ -24,12 +24,12 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 void Help()
 {
 	String TheName = "rp";
-	String Version = "0.1.10";
+	String Version = "0.1.11";
 	print("Author: Dan (DJ) Coffman");
 	print("Program: \"" << TheName << "\"");
 	print("Version: "<< Version);
 	print("Purpose: run a command/script on repeat");
-	print("Usage: rp <args>");
+	print("Usage: " << TheName << " <args>");
 	print("{REQUIRED}");
 	print("\t-c <command|script>\t\t: command or script to execute");
 	print("\t--command <command|script file>\t: command or script to execute");
