@@ -24,7 +24,7 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 void Help()
 {
 	String TheName = "rp";
-	String Version = "0.1.11";
+	String Version = "0.1.12";
 	print("Author: Dan (DJ) Coffman");
 	print("Program: \"" << TheName << "\"");
 	print("Version: "<< Version);
@@ -310,7 +310,7 @@ int main(int argc, char* argv[])
 					if (IsNotOk == false)
 					{
 						//Get command
-						if ((now == "-c") || (now == "--comand"))
+						if ((now == "-c") || (now == "--command"))
 						{
 							Command = value;
 						}
