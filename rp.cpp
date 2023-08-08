@@ -24,7 +24,7 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 void Help()
 {
 	String TheName = "rp";
-	String Version = "0.1.12";
+	String Version = "0.1.13";
 	print("Author: Dan (DJ) Coffman");
 	print("Program: \"" << TheName << "\"");
 	print("Version: "<< Version);
@@ -57,6 +57,12 @@ void Help()
 	print("");
 	print("{EXAMPLE}: Run a command 3 times, sleep for 3 seconds");
 	print("\t$ " << TheName << " -c ls -s 3 -r 3");
+	print("");
+	print("{EXAMPLE}: Run a command until a given output");
+	print("\t$ " << TheName << " -c ls -s 3 -r 3 --find \"Documents\"");
+	print("");
+	print("{EXAMPLE}: Run a command until another command/script is finished running");
+	print("\t$ " << TheName << " -c ls -s 3 -r 3 --until \"whoami\"");
 	print("");
 	print("\n[NOTE] \"ctrl+c\" to kill program");
 }
