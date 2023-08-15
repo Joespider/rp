@@ -8,6 +8,7 @@
 #define String std::string
 
 bool KillProgram = false;
+String TheName = "";
 
 void Help();
 void Sleep(int time);
@@ -23,7 +24,6 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 
 void Help()
 {
-	String TheName = "rp";
 	String Version = "0.1.13";
 	print("Author: Dan (DJ) Coffman");
 	print("Program: \"" << TheName << "\"");
@@ -292,6 +292,13 @@ int main(int argc, char* argv[])
 	bool ShowInfo = false;
 	bool IsNotOk = false;
 	bool WaitForUser = false;
+
+	String out = String(argv[0]);
+
+	//Parsing program name
+	std::size_t pos = out.rfind('/');
+	TheName = out.substr(pos + 1);
+	out = "";
 
 	//Eval user input
 	if (argc > 1)
