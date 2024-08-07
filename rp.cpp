@@ -25,7 +25,7 @@ void Run(String command, bool Clear, int time, int repeat, bool Show, bool Wait,
 void Help()
 {
 	String Version = "0.1.13";
-	print("Author: Dan (DJ) Coffman");
+	print("Author: joespider");
 	print("Program: \"" << TheName << "\"");
 	print("Version: "<< Version);
 	print("Purpose: run a command/script on repeat");
